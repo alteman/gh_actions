@@ -62,3 +62,5 @@ jobs:
           git remote set-url fork "https://oauth2:$REPO_KEY@github.com/alteman/betaflight"
           set -x
           git push fork rebased_$TAG
+        env:
+          REPO_KEY: ${{ secrets.REPO_KEY }}
