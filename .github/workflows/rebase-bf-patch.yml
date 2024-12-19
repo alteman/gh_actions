@@ -42,11 +42,13 @@ jobs:
           IFS=$'\n' read -d '' -a myarray <<< "$TAGS" || true
           echo Last tag: "${myarray[0]}"
           TAG=${myarray[0]}
+          # FIXME TESTING
+          TAG=4.5.0
           mkdir -p work
           cd work
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
-          git clone -o fork -b "${BRANCH_NAME}" https://github.com/alteman/betaflight
+          git clone -o fork -b "${BRANCH_NAME}" "https://github.com/alteman/betaflight"
           cd betaflight
           COMMIT=$(git rev-list -n 1 "$BRANCH_NAME")
           git remote add origin https://github.com/betaflight/betaflight
@@ -55,4 +57,7 @@ jobs:
           git cherry-pick $COMMIT
           git branch rebased_$TAG
           git checkout rebased_$TAG
-          git log -2
+          set +x
+          git remote set-url fork "https://oauth2:$REPO_KEY@github.com/alteman/betaflight"
+          set -x
+          git push fork rebased_$TAG
