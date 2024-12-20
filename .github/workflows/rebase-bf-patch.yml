@@ -40,9 +40,9 @@ jobs:
             exit 1
           }
           IFS=$'\n' read -d '' -a TAGARRAY <<< "$TAGS" || true
-          echo Last tag: "${TAGARRAY[0]}"
-          TAG=${TAGARRAY[0]}
-          NEWBRANCH=rebased_$TAG
+          LASTTAG=${TAGARRAY[0]}
+          echo Last tag: "$LASTTAG"
+          NEWBRANCH=rebased_$LASTTAG
 
           mkdir -p work
           cd work
@@ -57,7 +57,7 @@ jobs:
           COMMIT=$(git rev-list -n 1 "$BRANCH_NAME" --)
           git remote add origin https://github.com/betaflight/betaflight
           git fetch --all --tags 
-          git checkout tags/$TAG
+          git checkout tags/$LASTTAG
           git cherry-pick $COMMIT
           git branch $NEWBRANCH
           git checkout $NEWBRANCH
@@ -80,7 +80,7 @@ jobs:
           set -x
           cd alteman.github.io
           cp ../versions.yaml _data/bf.yaml
-          git commit  -m "Add BF $TAG" _data/bf.yaml
+          git commit  -m "Add BF $LASTTAG" _data/bf.yaml
           git push origin main
 
         env:
