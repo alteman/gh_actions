@@ -65,7 +65,7 @@ jobs:
           git remote set-url fork "https://oauth2:$REPO_KEY@github.com/alteman/betaflight"
           set -x
           git push fork $NEWBRANCH
-          echo "--" > ../versions.yaml
+          echo "---" > ../versions.yaml
           echo "patched_versions:" >> ../versions.yaml
           for TAG in "${TAGARRAY[@]}"
           do
