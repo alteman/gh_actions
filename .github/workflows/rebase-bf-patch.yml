@@ -50,7 +50,7 @@ jobs:
           git config --global user.name "Your Name"
           git clone -o fork -b "${BRANCH_NAME}" "https://github.com/alteman/betaflight"
           cd betaflight
-          git ls-remote --exit-code --heads origin refs/heads/$NEWBRANCH && {
+          git ls-remote --exit-code --heads fork refs/heads/$NEWBRANCH && {
             echo "Branch already exists, exiting!"
             exit 0
           } || true
