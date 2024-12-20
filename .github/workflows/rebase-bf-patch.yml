@@ -54,7 +54,7 @@ jobs:
             echo "Branch already exists, exiting!"
             exit 0
           } || true
-          COMMIT=$(git rev-list -n 1 "$BRANCH_NAME")
+          COMMIT=$(git rev-list -n 1 "$BRANCH_NAME" --)
           git remote add origin https://github.com/betaflight/betaflight
           git fetch --all --tags 
           git checkout tags/$TAG
@@ -70,7 +70,7 @@ jobs:
           for TAG in "${TAGARRAY[@]}"
           do
             echo "  - tag: $TAG" >> ../versions.yaml
-            COMMIT=$(git rev-list -n 1 "rebased_$TAG")
+            COMMIT=$(git rev-list -n 1 "fork/rebased_$TAG" --)
             echo "    commit: $COMMIT" >> ../versions.yaml
           done
           cat ../versions.yaml
