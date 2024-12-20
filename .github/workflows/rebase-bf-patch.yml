@@ -80,7 +80,7 @@ jobs:
           set -x
           cd alteman.github.io
           cp ../versions.yaml _data/bf.yaml
-          git commit  -m "Add BF $TAG' _data/bf.yaml
+          git commit  -m "Add BF $TAG" _data/bf.yaml
           git push origin main
 
         env:
