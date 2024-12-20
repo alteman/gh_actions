@@ -32,7 +32,6 @@ jobs:
           
           LAST_TAG=4.5.0
           BRANCH_NAME=msp_delayed_disarm
-          
           TAGS=$(sed "/${LAST_TAG}/q" <.tags | sed \$d)
           
           echo Tags: "$TAGS"
@@ -43,24 +42,28 @@ jobs:
           IFS=$'\n' read -d '' -a myarray <<< "$TAGS" || true
           echo Last tag: "${myarray[0]}"
           TAG=${myarray[0]}
-          # FIXME TESTING
-          TAG=4.5.0
+          NEWBRANCH=rebased_$TAG
+
           mkdir -p work
           cd work
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
           git clone -o fork -b "${BRANCH_NAME}" "https://github.com/alteman/betaflight"
           cd betaflight
+          git ls-remote --exit-code --heads origin refs/heads/$NEWBRANCH && {
+            echo "Branch already exists, exiting!"
+            exit 0
+          } || true
           COMMIT=$(git rev-list -n 1 "$BRANCH_NAME")
           git remote add origin https://github.com/betaflight/betaflight
           git fetch --all --tags 
           git checkout tags/$TAG
           git cherry-pick $COMMIT
-          git branch rebased_$TAG
-          git checkout rebased_$TAG
+          git branch $NEWBRANCH
+          git checkout $NEWBRANCH
           set +x
           git remote set-url fork "https://oauth2:$REPO_KEY@github.com/alteman/betaflight"
           set -x
-          git push fork rebased_$TAG
+          git push fork $NEWBRANCH
         env:
           REPO_KEY: ${{ secrets.REPO_KEY }}
