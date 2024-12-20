@@ -70,10 +70,10 @@ jobs:
           for TAG in "${TAGARRAY[@]}"
           do
             echo "  - tag: $TAG" >> ../versions.yaml
-            COMMIT=$(git rev-list -n 1 "rebased__$TAG")
+            COMMIT=$(git rev-list -n 1 "rebased_$TAG")
             echo "    commit: $COMMIT" >> ../versions.yaml
           done
-          set -x
+          cat ../versions.yaml
           cd .. # back to ..erm.. ./work
           set +x
           git clone origin "https://oauth2:$REPO_KEY@github.com/alteman/alteman.github.io"
