@@ -39,9 +39,9 @@ jobs:
             echo "No new releases, exiting!"
             exit 1
           }
-          IFS=$'\n' read -d '' -a myarray <<< "$TAGS" || true
-          echo Last tag: "${myarray[0]}"
-          TAG=${myarray[0]}
+          IFS=$'\n' read -d '' -a TAGARRAY <<< "$TAGS" || true
+          echo Last tag: "${TAGARRAY[0]}"
+          TAG=${TAGARRAY[0]}
           NEWBRANCH=rebased_$TAG
 
           mkdir -p work
@@ -65,5 +65,23 @@ jobs:
           git remote set-url fork "https://oauth2:$REPO_KEY@github.com/alteman/betaflight"
           set -x
           git push fork $NEWBRANCH
+          echo "--" > ../versions.yaml
+          echo "patched_versions:" >> ../versions.yaml
+          for TAG in "${TAGARRAY[@]}"
+          do
+            echo "  - tag: $TAG" >> ../versions.yaml
+            COMMIT=$(git rev-list -n 1 "rebased__$TAG")
+            echo "    commit: $COMMIT" >> ../versions.yaml
+          done
+          set -x
+          cd .. # back to ..erm.. ./work
+          set +x
+          git clone origin "https://oauth2:$REPO_KEY@github.com/alteman/alteman.github.io"
+          set -x
+          cd alteman.github.io
+          cp ../versions.yaml _data/bf.yaml
+          git commit  -m "Add BF $TAG' _data/bf.yaml
+          git push origin main
+
         env:
           REPO_KEY: ${{ secrets.REPO_KEY }}
