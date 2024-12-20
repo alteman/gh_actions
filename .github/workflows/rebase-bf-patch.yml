@@ -30,7 +30,7 @@ jobs:
             https://api.github.com/repos/betaflight/betaflight/releases | jq -r '.[]|.draft=false |.tag_name')
           echo "$TAGS" > .tags
           
-          LAST_TAG=4.5.0
+          LAST_TAG=4.5.0-RC4
           BRANCH_NAME=msp_delayed_disarm
           TAGS=$(sed "/${LAST_TAG}/q" <.tags | sed \$d)
           
@@ -76,7 +76,7 @@ jobs:
           cat ../versions.yaml
           cd .. # back to ..erm.. ./work
           set +x
-          git clone origin "https://oauth2:$REPO_KEY@github.com/alteman/alteman.github.io"
+          git clone "https://oauth2:$REPO_KEY@github.com/alteman/alteman.github.io"
           set -x
           cd alteman.github.io
           cp ../versions.yaml _data/bf.yaml
