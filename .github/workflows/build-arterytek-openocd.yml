@@ -16,7 +16,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Check out openocd portfile
-        
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            data/openocd/ports
       - name: Set up macports
         run: |
           mkdir ~/macports
