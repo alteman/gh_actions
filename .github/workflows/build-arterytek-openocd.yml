@@ -15,6 +15,8 @@ jobs:
     #environment: secrets
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Check out openocd portfile
+        
       - name: Set up macports
         run: |
           mkdir ~/macports
@@ -24,10 +26,17 @@ jobs:
           cd MacPorts-${macports_version}
           ./configure --enable-readline --prefix=$HOME/macports --with-no-root-privileges
           make && make install
-          export PATH=$PATH:~/macports/bin
+          echo ~/macports/bin >> $GITHUB_PATH
 
           port version
 
+          echo file://$GITHUB_WORKSPACE/data/openocd/ports >> ~/macports/etc/macports/sources.conf
+          pushd $GITHUB_WORKSPACE/data/openocd/ports
+          portindex
+          popd
+
+          port install openocd +universal +stlink
+          
         env:
           macports_version: 2.10.5
         #  REPO_KEY: ${{ secrets.REPO_KEY }}
