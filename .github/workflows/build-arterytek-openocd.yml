@@ -7,9 +7,15 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  macports_version: 2.10.5
+  
+  
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build-job:
+    env:
+      macports: ${{ env.HOME }}/macports
     # The type of runner that the job will run on
     runs-on: macos-15
     #environment: secrets
@@ -22,19 +28,19 @@ jobs:
             data/openocd/ports
       - name: Set up macports
         run: |
-          mkdir ~/macports
-          cd ~/macports
+          mkdir ${macports}
+          cd ${macports}
           curl -O https://distfiles.macports.org/MacPorts/MacPorts-${macports_version}.tar.bz2
           tar xf MacPorts-${macports_version}.tar.bz2
           cd MacPorts-${macports_version}
-          ./configure --enable-readline --prefix=$HOME/macports --with-no-root-privileges
+          ./configure --enable-readline --prefix=$macports --with-no-root-privileges
           make && make install
-          echo ~/macports/bin >> $GITHUB_PATH
-          export PATH=$PATH:~/macports/bin
+          echo ${macports}/bin >> $GITHUB_PATH
+          export PATH=$PATH:${macports}/bin
 
           port selfupdate
           portsdir=$GITHUB_WORKSPACE/data/openocd/ports
-          portsconf=$HOME/macports/etc/macports/sources.conf
+          portsconf=${macports}/etc/macports/sources.conf
           echo -e "file://$portsdir\n$(cat $portsconf)" > $portsconf
           pushd $portsdir
           portindex
@@ -42,6 +48,23 @@ jobs:
 
           port install openocd +universal +stlink
           
-        env:
-          macports_version: 2.10.5
+      - name: Prepare build artifacts
+        run: |
+          cd $HOME
+          mkdir -p dist/openocd
+          pushd dist/openocd
+          mkdir -p bin lib share
+          cp ${macports}/bin/openocd bin/
+          cp ${macports}/lib/libusb-1.0.0.dylib lib/
+          cp -r ${macports}/share/openocd share/
+          cd ..
+          tar cjf openocd.tar.bz2 openocd
+          popd
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openocd-arterytek-universal
+          path: |
+            dist/openocd.tar.bz2
+            
         #  REPO_KEY: ${{ secrets.REPO_KEY }}
