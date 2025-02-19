@@ -9,16 +9,6 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  install-macports-on-macos-15:
-    runs-on: macos-15
-    name: 'Install MacPorts 2.9.3 on MacOS 15'
-    steps:
-      - uses: actions/checkout@v3
-      - uses: melusina-org/setup-macports@v1
-        id: 'macports'
-        with:
-          parameters: 'data/macports/action_config.yaml'
-  # This workflow contains a single job called "build"
   build-job:
     # The type of runner that the job will run on
     runs-on: macos-15
@@ -27,7 +17,17 @@ jobs:
     steps:
       - name: Set up macports
         run: |
+          mkdir ~/macports
+          cd ~/macports
+          curl -O https://distfiles.macports.org/MacPorts/MacPorts-${macports_version}.tar.bz2
+          tar xf MacPorts-${macports_version}.tar.bz2
+          cd MacPorts-${macports_version}
+          ./configure --enable-readline --prefix=$HOME/macports --with-no-root-privileges
+          make && make install
+          export PATH=$PATH:~/macports/bin
+
           port version
 
-        #env:
+        env:
+          macports_version: 2.10.5
         #  REPO_KEY: ${{ secrets.REPO_KEY }}
