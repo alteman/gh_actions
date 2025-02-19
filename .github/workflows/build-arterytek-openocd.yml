@@ -32,10 +32,11 @@ jobs:
           echo ~/macports/bin >> $GITHUB_PATH
           export PATH=$PATH:~/macports/bin
 
-          port version
-
-          echo file://$GITHUB_WORKSPACE/data/openocd/ports >> ~/macports/etc/macports/sources.conf
-          pushd $GITHUB_WORKSPACE/data/openocd/ports
+          port selfupdate
+          portsdir=$GITHUB_WORKSPACE/data/openocd/ports
+          portsconf=$HOME/macports/etc/macports/sources.conf
+          echo -e "file://$portsdir\n$(cat $portsconf)" > $portsconf
+          pushd $portsdir
           portindex
           popd
 
