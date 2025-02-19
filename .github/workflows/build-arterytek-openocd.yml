@@ -46,7 +46,7 @@ jobs:
 
           port install openocd +universal +stlink
         env:
-          macports: ${{ env.HOME }}/macports
+          macports: ${{ runner.temp }}/macports
 
       - name: Prepare build artifacts
         run: |
@@ -61,7 +61,7 @@ jobs:
           tar cjf openocd.tar.bz2 openocd
           popd
         env:
-          macports: ${{ env.HOME }}/macports
+          macports: ${{ runner.temp }}/macports
           
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
